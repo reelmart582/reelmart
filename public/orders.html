@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Orders — ReelMart</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --accent:#F5A623;--accent2:#E8522A;--dark:#0E0E0E;--surface:#1A1A1A;
+    --surface2:#242424;--surface3:#2E2E2E;--text:#F0EEE8;--text2:#888;
+    --success:#3DAA6A;--error:#E85252;--radius:12px;
+    --font-display:'Playfair Display',serif;--font-body:'DM Sans',sans-serif;
+  }
+  body{font-family:var(--font-body);background:var(--dark);color:var(--text);min-height:100vh}
+
+  /* NAV */
+  nav{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;
+    background:#111;border-bottom:0.5px solid #222;position:sticky;top:0;z-index:50}
+  .logo{font-family:var(--font-display);font-size:22px;font-weight:900;color:var(--text);text-decoration:none}
+  .logo span{color:var(--accent)}
+  .nav-links{display:flex;gap:20px;align-items:center}
+  .nav-links a{color:var(--text2);text-decoration:none;font-size:13px;transition:color 0.15s}
+  .nav-links a:hover{color:var(--accent)}
+
+  /* PAGE */
+  .page{max-width:900px;margin:0 auto;padding:32px 20px}
+  .page-title{font-family:var(--font-display);font-size:28px;font-weight:700;margin-bottom:6px}
+  .page-sub{font-size:13px;color:var(--text2);margin-bottom:28px}
+
+  /* ORDER CARD */
+  .order-card{background:var(--surface);border:0.5px solid #2A2A2A;border-radius:var(--radius);
+    margin-bottom:16px;overflow:hidden}
+  .order-header{display:flex;align-items:center;justify-content:space-between;
+    padding:16px 20px;border-bottom:0.5px solid #222;flex-wrap:wrap;gap:10px}
+  .order-num{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--accent)}
+  .order-date{font-size:11px;color:var(--text2)}
+  .order-status{display:inline-flex;align-items:center;gap:5px;font-size:11px;
+    padding:4px 10px;border-radius:20px;font-weight:500}
+  .status-pending{background:rgba(245,166,35,0.15);color:var(--accent)}
+  .status-confirmed{background:rgba(59,130,246,0.15);color:#60A5FA}
+  .status-shipped{background:rgba(139,92,246,0.15);color:#A78BFA}
+  .status-delivered{background:rgba(61,170,106,0.15);color:var(--success)}
+  .status-cancelled{background:rgba(232,82,42,0.15);color:var(--error)}
+
+  /* ORDER ITEMS */
+  .order-items{padding:16px 20px}
+  .order-item{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  .order-item:last-child{margin-bottom:0}
+  .item-img{width:52px;height:52px;border-radius:8px;background:var(--surface2);
+    display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;overflow:hidden}
+  .item-img img{width:100%;height:100%;object-fit:cover}
+  .item-info{flex:1;min-width:0}
+  .item-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .item-qty{font-size:11px;color:var(--text2);margin-top:2px}
+  .item-price{font-size:13px;font-weight:600;color:var(--accent);flex-shrink:0}
+
+  /* ORDER FOOTER */
+  .order-footer{display:flex;align-items:center;justify-content:space-between;
+    padding:14px 20px;background:var(--surface2);flex-wrap:wrap;gap:10px}
+  .order-total{font-size:14px;font-weight:600}
+  .order-total span{color:var(--accent)}
+  .order-delivery{font-size:11px;color:var(--text2)}
+  .reorder-btn{background:transparent;border:0.5px solid var(--accent);color:var(--accent);
+    padding:7px 16px;border-radius:20px;font-size:12px;cursor:pointer;
+    font-family:var(--font-body);transition:all 0.15s}
+  .reorder-btn:hover{background:var(--accent);color:#111}
+
+  /* STATUS TIMELINE */
+  .timeline{padding:16px 20px;border-top:0.5px solid #222}
+  .timeline-title{font-size:11px;color:var(--text2);text-transform:uppercase;
+    letter-spacing:0.5px;margin-bottom:12px}
+  .timeline-steps{display:flex;align-items:center;gap:0}
+  .tl-step{display:flex;flex-direction:column;align-items:center;flex:1}
+  .tl-circle{width:24px;height:24px;border-radius:50%;border:2px solid var(--surface3);
+    display:flex;align-items:center;justify-content:center;font-size:10px;
+    color:var(--text2);background:var(--surface);flex-shrink:0;z-index:1}
+  .tl-circle.done{border-color:var(--success);background:var(--success);color:white}
+  .tl-circle.active{border-color:var(--accent);background:var(--accent);color:#111}
+  .tl-label{font-size:9px;color:var(--text2);margin-top:4px;text-align:center}
+  .tl-label.done{color:var(--success)}
+  .tl-label.active{color:var(--accent)}
+  .tl-line{flex:1;height:2px;background:var(--surface3);margin-top:-14px}
+  .tl-line.done{background:var(--success)}
+
+  /* EMPTY STATE */
+  .empty{text-align:center;padding:64px 20px;color:var(--text2)}
+  .empty-icon{font-size:56px;margin-bottom:16px}
+  .empty-title{font-size:18px;font-weight:500;color:var(--text);margin-bottom:8px}
+  .empty-sub{font-size:13px;margin-bottom:24px}
+  .shop-btn{background:var(--accent);color:#111;border:none;padding:12px 28px;
+    border-radius:24px;font-size:14px;font-weight:600;cursor:pointer;
+    font-family:var(--font-body);text-decoration:none;display:inline-block}
+
+  /* LOADING */
+  .loading{text-align:center;padding:64px;color:var(--text2);font-size:14px}
+
+  /* NOT LOGGED IN */
+  .not-logged-in{text-align:center;padding:64px 20px}
+  .not-logged-in-icon{font-size:56px;margin-bottom:16px}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);
+    background:var(--accent);color:#111;padding:10px 22px;border-radius:24px;
+    font-size:13px;font-weight:500;opacity:0;transition:all 0.3s;z-index:999}
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">Reel<span>Mart</span></a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/reels_feed.html">Reels</a>
+    <a href="/cart.html">Cart</a>
+    <a href="/auth.html" id="auth-link">Sign in</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-title">My Orders</div>
+  <div class="page-sub" id="order-count">Loading your orders...</div>
+  <div id="orders-container">
+    <div class="loading">⏳ Loading your orders...</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API   = 'http://localhost:3000/api';
+const token = localStorage.getItem('reelmartToken');
+const user  = JSON.parse(localStorage.getItem('reelmartUser') || 'null');
+
+// Status maps
+const STATUS_CLASS = {
+  pending:   'status-pending',
+  confirmed: 'status-confirmed',
+  shipped:   'status-shipped',
+  delivered: 'status-delivered',
+  cancelled: 'status-cancelled',
+};
+const STATUS_ICON = {
+  pending:   '⏳',
+  confirmed: '✅',
+  shipped:   '🚚',
+  delivered: '🎉',
+  cancelled: '❌',
+};
+const TL_STEPS = ['pending','confirmed','shipped','delivered'];
+
+// Update nav
+function updateNav() {
+  const link = document.getElementById('auth-link');
+  if (token && user) {
+    link.textContent = user.fullName || user.email.split('@')[0];
+    link.href = '#';
+  }
+}
+
+// Load real orders from API
+async function loadOrders() {
+  const container = document.getElementById('orders-container');
+  const countEl   = document.getElementById('order-count');
+
+  if (!token || !user) {
+    container.innerHTML = `
+      <div class="not-logged-in">
+        <div class="not-logged-in-icon">🔒</div>
+        <div style="font-size:18px;font-weight:500;margin-bottom:8px">Sign in to view your orders</div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:24px">
+          You need to be logged in to see your order history.
+        </div>
+        <a href="/auth.html" class="shop-btn">Sign in</a>
+      </div>`;
+    countEl.textContent = '';
+    return;
+  }
+
+  try {
+    const res  = await fetch(API + '/orders/my-orders', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || 'Failed to load orders');
+    }
+
+    const orders = data.orders || [];
+
+    if (!orders.length) {
+      countEl.textContent = 'No orders yet';
+      container.innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">📦</div>
+          <div class="empty-title">No orders yet</div>
+          <div class="empty-sub">Start shopping and your orders will appear here.</div>
+          <a href="/" class="shop-btn">Shop now</a>
+        </div>`;
+      return;
+    }
+
+    countEl.textContent = orders.length + ' order' + (orders.length > 1 ? 's' : '');
+    container.innerHTML = orders.map(order => buildOrderCard(order)).join('');
+
+  } catch (err) {
+    console.error('Load orders error:', err);
+    container.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">⚠️</div>
+        <div class="empty-title">Could not load orders</div>
+        <div class="empty-sub">${err.message}</div>
+        <button class="shop-btn" onclick="loadOrders()">Try again</button>
+      </div>`;
+  }
+}
+
+// Build one order card
+function buildOrderCard(order) {
+  const date     = new Date(order.createdAt).toLocaleDateString('en-NG', {
+    day:'numeric', month:'short', year:'numeric'
+  });
+  const statusClass = STATUS_CLASS[order.status] || 'status-pending';
+  const statusIcon  = STATUS_ICON[order.status]  || '⏳';
+
+  // Items HTML
+  const itemsHTML = (order.items || []).slice(0, 3).map(item => {
+    const imgSrc = item.image
+      ? (item.image.startsWith('http') ? item.image : 'http://localhost:3000/uploads/' + item.image)
+      : null;
+    return `
+      <div class="order-item">
+        <div class="item-img">
+          ${imgSrc
+            ? `<img src="${imgSrc}" alt="${item.name}" onerror="this.parentElement.textContent='📦'">`
+            : '📦'}
+        </div>
+        <div class="item-info">
+          <div class="item-name">${item.name}</div>
+          <div class="item-qty">Qty: ${item.quantity}</div>
+        </div>
+        <div class="item-price">₦${(item.price * item.quantity).toLocaleString()}</div>
+      </div>`;
+  }).join('');
+
+  const extraItems = order.items.length > 3
+    ? `<div style="font-size:11px;color:var(--text2);margin-top:4px">+${order.items.length - 3} more items</div>`
+    : '';
+
+  // Timeline
+  const currentIdx = TL_STEPS.indexOf(order.status);
+  const timelineHTML = TL_STEPS.map((step, i) => {
+    const isDone   = i < currentIdx || order.status === 'delivered';
+    const isActive = i === currentIdx && order.status !== 'cancelled';
+    const cls = isDone ? 'done' : isActive ? 'active' : '';
+    const lineCls = i < currentIdx ? 'done' : '';
+    return `
+      <div class="tl-step">
+        <div class="tl-circle ${cls}">
+          ${isDone ? '✓' : i + 1}
+        </div>
+        <div class="tl-label ${cls}">${step.charAt(0).toUpperCase() + step.slice(1)}</div>
+      </div>
+      ${i < TL_STEPS.length - 1 ? `<div class="tl-line ${lineCls}"></div>` : ''}`;
+  }).join('');
+
+  return `
+    <div class="order-card">
+      <div class="order-header">
+        <div>
+          <div class="order-num">Order #${order.orderNumber}</div>
+          <div class="order-date">${date} · ${order.fullName}</div>
+        </div>
+        <div class="order-status ${statusClass}">
+          ${statusIcon} ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+        </div>
+      </div>
+
+      <div class="order-items">
+        ${itemsHTML}
+        ${extraItems}
+      </div>
+
+      ${order.status !== 'cancelled' ? `
+      <div class="timeline">
+        <div class="timeline-title">Order progress</div>
+        <div class="timeline-steps">${timelineHTML}</div>
+      </div>` : ''}
+
+      <div class="order-footer">
+        <div>
+          <div class="order-total">Total: <span>₦${Number(order.totalAmount).toLocaleString()}</span></div>
+          <div class="order-delivery">${order.address}, ${order.city}, ${order.state}</div>
+        </div>
+        <button class="reorder-btn" onclick="reorder('${order._id}')">Reorder</button>
+      </div>
+    </div>`;
+}
+
+// Reorder — add all items back to cart
+async function reorder(orderId) {
+  try {
+    const res  = await fetch(API + '/orders/' + orderId, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error('Failed');
+
+    let cart = JSON.parse(localStorage.getItem('reelmartCart') || '[]');
+    data.order.items.forEach(item => {
+      const existing = cart.find(c => c._id === String(item.product?._id || item.product));
+      if (existing) {
+        existing.quantity += item.quantity;
+      } else {
+        cart.push({
+          _id:      String(item.product?._id || item.product),
+          name:     item.name,
+          price:    item.price,
+          image:    item.image || '',
+          quantity: item.quantity
+        });
+      }
+    });
+    localStorage.setItem('reelmartCart', JSON.stringify(cart));
+    showToast('Items added to cart! 🛒');
+    setTimeout(() => window.location.href = '/cart.html', 1200);
+  } catch (err) {
+    showToast('Could not reorder. Please try again.');
+  }
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+updateNav();
+loadOrders();
+</script>
+</body>
+</html>

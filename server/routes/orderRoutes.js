@@ -1,0 +1,10 @@
+const express=require("express");
+const router=express.Router();
+const authMiddleware=require("../middleware/authMiddleware");
+const {placeOrder,getMyOrders,getOrder,getSellerOrders,updateOrderStatus}=require("../controllers/ordercontroller");
+router.post("/",authMiddleware,placeOrder);
+router.get("/my-orders",authMiddleware,getMyOrders);
+router.get("/seller",authMiddleware,getSellerOrders);
+router.patch("/:id/status",authMiddleware,updateOrderStatus);
+router.get("/:id",authMiddleware,getOrder);
+module.exports=router;

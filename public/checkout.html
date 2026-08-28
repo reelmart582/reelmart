@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout — ReelMart</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --accent:#F5A623;--accent2:#E8522A;--dark:#0E0E0E;--surface:#1A1A1A;
+    --surface2:#242424;--surface3:#2E2E2E;--text:#F0EEE8;--text2:#888;
+    --success:#3DAA6A;--error:#E85252;--radius:12px;
+    --font-display:'Playfair Display',serif;--font-body:'DM Sans',sans-serif;
+  }
+  body{font-family:var(--font-body);background:var(--dark);color:var(--text);min-height:100vh}
+
+  /* NAV */
+  nav{display:flex;align-items:center;justify-content:space-between;padding:14px 28px;
+    background:#111;border-bottom:0.5px solid #222;position:sticky;top:0;z-index:50}
+  .logo{font-family:var(--font-display);font-size:22px;font-weight:900;color:var(--text);text-decoration:none}
+  .logo span{color:var(--accent)}
+  .nav-back{color:var(--text2);text-decoration:none;font-size:13px;display:flex;align-items:center;gap:5px}
+  .nav-back:hover{color:var(--accent)}
+
+  /* LAYOUT */
+  .page{display:grid;grid-template-columns:1fr 380px;gap:24px;max-width:1100px;margin:0 auto;padding:28px 20px}
+  @media(max-width:768px){.page{grid-template-columns:1fr}}
+
+  /* STEPS */
+  .steps{display:flex;align-items:center;gap:0;margin-bottom:28px}
+  .step{display:flex;align-items:center;gap:8px}
+  .step-circle{width:28px;height:28px;border-radius:50%;border:2px solid var(--surface3);
+    display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;
+    color:var(--text2);flex-shrink:0;transition:all 0.3s}
+  .step-circle.active{border-color:var(--accent);background:var(--accent);color:#111}
+  .step-circle.done{border-color:var(--success);background:var(--success);color:white}
+  .step-label{font-size:12px;color:var(--text2);font-weight:500;transition:color 0.3s}
+  .step-label.active{color:var(--accent);font-weight:600}
+  .step-label.done{color:var(--success)}
+  .step-line{flex:1;height:1px;background:var(--surface3);margin:0 10px;transition:background 0.3s}
+  .step-line.done{background:var(--success)}
+
+  /* PANELS */
+  .panel{display:none}
+  .panel.active{display:block}
+
+  /* CARD */
+  .card{background:var(--surface);border:0.5px solid #2A2A2A;border-radius:var(--radius);padding:20px;margin-bottom:16px}
+  .card-title{font-size:17px;font-weight:600;margin-bottom:18px;font-family:var(--font-display)}
+
+  /* FORM */
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .form-group{display:flex;flex-direction:column;gap:5px}
+  .form-group.full{grid-column:1/-1}
+  label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;font-weight:500}
+  input,select{background:var(--surface2);border:0.5px solid var(--surface3);color:var(--text);
+    padding:11px 13px;border-radius:8px;font-size:13px;font-family:var(--font-body);outline:none;
+    transition:border-color 0.15s;width:100%}
+  input:focus,select:focus{border-color:var(--accent)}
+  input::placeholder{color:var(--text2)}
+  select option{background:var(--surface2)}
+
+  /* DELIVERY OPTIONS */
+  .delivery-option{display:flex;align-items:center;justify-content:space-between;
+    padding:14px 16px;border-radius:10px;border:1.5px solid var(--surface3);
+    cursor:pointer;margin-bottom:10px;transition:all 0.15s}
+  .delivery-option.selected{border-color:var(--accent);background:rgba(245,166,35,0.06)}
+  .delivery-option-left{display:flex;align-items:center;gap:12px}
+  .radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--surface3);
+    display:flex;align-items:center;justify-content:center;transition:all 0.15s;flex-shrink:0}
+  .delivery-option.selected .radio{border-color:var(--accent)}
+  .radio-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);display:none}
+  .delivery-option.selected .radio-dot{display:block}
+  .delivery-name{font-size:13px;font-weight:500}
+  .delivery-desc{font-size:11px;color:var(--text2);margin-top:2px}
+  .delivery-price{font-size:13px;font-weight:600;color:var(--accent)}
+
+  /* PAYMENT OPTIONS */
+  .pay-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+  .pay-option{padding:14px;border-radius:10px;border:1.5px solid var(--surface3);
+    cursor:pointer;text-align:center;transition:all 0.15s}
+  .pay-option:hover{border-color:rgba(245,166,35,0.4)}
+  .pay-option.active{border-color:var(--accent);background:rgba(245,166,35,0.06)}
+  .pay-icon{font-size:22px;margin-bottom:5px}
+  .pay-name{font-size:12px;font-weight:500}
+
+  /* BUTTONS */
+  .btn-primary{background:var(--accent);color:#111;border:none;padding:14px 28px;
+    border-radius:24px;font-size:14px;font-weight:600;cursor:pointer;width:100%;
+    font-family:var(--font-body);transition:transform 0.15s;margin-top:8px}
+  .btn-primary:hover:not(:disabled){transform:scale(1.01)}
+  .btn-primary:disabled{opacity:0.6;cursor:not-allowed}
+  .btn-ghost{background:transparent;color:var(--text2);border:0.5px solid var(--surface3);
+    padding:12px 20px;border-radius:24px;font-size:13px;cursor:pointer;
+    font-family:var(--font-body);transition:all 0.15s;margin-top:8px;width:100%}
+  .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* ORDER SUMMARY */
+  .summary-card{background:var(--surface);border:0.5px solid #2A2A2A;border-radius:var(--radius);padding:20px;position:sticky;top:80px}
+  .summary-title{font-size:15px;font-weight:600;margin-bottom:16px;font-family:var(--font-display)}
+  .summary-item{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:12px;border-bottom:0.5px solid #222}
+  .summary-item:last-of-type{border-bottom:none}
+  .item-img{width:48px;height:48px;border-radius:8px;object-fit:cover;background:var(--surface2);
+    display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+  .item-img img{width:100%;height:100%;object-fit:cover;border-radius:8px}
+  .item-details{flex:1;min-width:0}
+  .item-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .item-qty{font-size:10px;color:var(--text2);margin-top:2px}
+  .item-price{font-size:13px;font-weight:600;color:var(--accent);flex-shrink:0}
+  .summary-divider{height:0.5px;background:#222;margin:14px 0}
+  .summary-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px;color:var(--text2)}
+  .summary-row.total{color:var(--text);font-weight:700;font-size:16px;margin-top:8px}
+  .summary-row.total span:last-child{color:var(--accent)}
+
+  /* EMPTY CART */
+  .empty-cart{text-align:center;padding:40px 20px;color:var(--text2)}
+  .empty-cart-icon{font-size:48px;margin-bottom:12px}
+
+  /* SUCCESS */
+  .success-panel{text-align:center;padding:40px 20px}
+  .success-icon{width:72px;height:72px;border-radius:50%;background:rgba(61,170,106,0.15);
+    border:2px solid var(--success);display:flex;align-items:center;justify-content:center;
+    font-size:32px;margin:0 auto 20px}
+  .success-title{font-family:var(--font-display);font-size:26px;font-weight:700;margin-bottom:8px}
+  .success-sub{font-size:14px;color:var(--text2);margin-bottom:8px}
+  .order-num{font-size:16px;font-weight:600;color:var(--accent);margin:12px 0 24px}
+
+  /* TOAST */
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);
+    background:var(--accent);color:#111;padding:10px 22px;border-radius:24px;
+    font-size:13px;font-weight:500;opacity:0;transition:all 0.3s;z-index:999;white-space:nowrap}
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+  .toast.error{background:var(--error);color:white}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo">Reel<span>Mart</span></a>
+  <a href="/cart.html" class="nav-back"><i class="ti ti-arrow-left"></i> Back to cart</a>
+</nav>
+
+<div class="page">
+
+  <!-- LEFT COLUMN -->
+  <div>
+    <!-- Steps -->
+    <div class="steps">
+      <div class="step">
+        <div class="step-circle active" id="sc1">1</div>
+        <div class="step-label active" id="sl1">Delivery</div>
+      </div>
+      <div class="step-line" id="line1"></div>
+      <div class="step">
+        <div class="step-circle" id="sc2">2</div>
+        <div class="step-label" id="sl2">Payment</div>
+      </div>
+      <div class="step-line" id="line2"></div>
+      <div class="step">
+        <div class="step-circle" id="sc3">3</div>
+        <div class="step-label" id="sl3">Review</div>
+      </div>
+    </div>
+
+    <!-- PANEL 1: Delivery -->
+    <div class="panel active" id="panel-1">
+      <div class="card">
+        <div class="card-title">Delivery details</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>First name</label>
+            <input type="text" id="firstname" placeholder="Adaeze">
+          </div>
+          <div class="form-group">
+            <label>Last name</label>
+            <input type="text" id="lastname" placeholder="Okafor">
+          </div>
+          <div class="form-group full">
+            <label>Phone number</label>
+            <input type="tel" id="phone" placeholder="08012345678">
+          </div>
+          <div class="form-group full">
+            <label>Delivery address</label>
+            <input type="text" id="address" placeholder="14 Admiralty Way, Lekki Phase 1">
+          </div>
+          <div class="form-group">
+            <label>City</label>
+            <input type="text" id="city" placeholder="Lagos">
+          </div>
+          <div class="form-group">
+            <label>State</label>
+            <select id="state">
+              <option value="">Select state</option>
+              <option>Abia</option><option>Adamawa</option><option>Akwa Ibom</option>
+              <option>Anambra</option><option>Bauchi</option><option>Bayelsa</option>
+              <option>Benue</option><option>Borno</option><option>Cross River</option>
+              <option>Delta</option><option>Ebonyi</option><option>Edo</option>
+              <option>Ekiti</option><option>Enugu</option><option>FCT</option>
+              <option>Gombe</option><option>Imo</option><option>Jigawa</option>
+              <option>Kaduna</option><option>Kano</option><option>Katsina</option>
+              <option>Kebbi</option><option>Kogi</option><option>Kwara</option>
+              <option>Lagos</option><option>Nasarawa</option><option>Niger</option>
+              <option>Ogun</option><option>Ondo</option><option>Osun</option>
+              <option>Oyo</option><option>Plateau</option><option>Rivers</option>
+              <option>Sokoto</option><option>Taraba</option><option>Yobe</option>
+              <option>Zamfara</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Delivery method</div>
+        <div class="delivery-option selected" id="opt-standard" onclick="selectDelivery('standard',0)">
+          <div class="delivery-option-left">
+            <div class="radio"><div class="radio-dot"></div></div>
+            <div>
+              <div class="delivery-name">Standard delivery</div>
+              <div class="delivery-desc">1–3 business days</div>
+            </div>
+          </div>
+          <div class="delivery-price">Free</div>
+        </div>
+        <div class="delivery-option" id="opt-express" onclick="selectDelivery('express',2500)">
+          <div class="delivery-option-left">
+            <div class="radio"><div class="radio-dot"></div></div>
+            <div>
+              <div class="delivery-name">Express delivery</div>
+              <div class="delivery-desc">Same day (order before 12pm)</div>
+            </div>
+          </div>
+          <div class="delivery-price">₦2,500</div>
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="goToPayment()">Continue to payment →</button>
+    </div>
+
+    <!-- PANEL 2: Payment -->
+    <div class="panel" id="panel-2">
+      <div class="card">
+        <div class="card-title">Payment method</div>
+        <div class="pay-grid">
+          <div class="pay-option active" id="pay-card" onclick="selectPayment('card')" data-method="card">
+            <div class="pay-icon">💳</div>
+            <div class="pay-name">Card</div>
+          </div>
+          <div class="pay-option" id="pay-transfer" onclick="selectPayment('transfer')" data-method="transfer">
+            <div class="pay-icon">🏦</div>
+            <div class="pay-name">Bank Transfer</div>
+          </div>
+          <div class="pay-option" id="pay-ussd" onclick="selectPayment('ussd')" data-method="ussd">
+            <div class="pay-icon">📱</div>
+            <div class="pay-name">USSD</div>
+          </div>
+          <div class="pay-option" id="pay-paystack" onclick="selectPayment('paystack')" data-method="paystack">
+            <div class="pay-icon">🔐</div>
+            <div class="pay-name">Paystack</div>
+          </div>
+        </div>
+
+        <!-- Card details (shown when card is selected) -->
+        <div id="card-details">
+          <div class="form-grid">
+            <div class="form-group full">
+              <label>Card number</label>
+              <input type="text" id="card-number" placeholder="4084 0840 8408 4081" maxlength="19">
+            </div>
+            <div class="form-group">
+              <label>Expiry date</label>
+              <input type="text" id="card-expiry" placeholder="12/28" maxlength="5">
+            </div>
+            <div class="form-group">
+              <label>CVV</label>
+              <input type="text" id="card-cvv" placeholder="408" maxlength="3">
+            </div>
+          </div>
+          <p style="font-size:11px;color:var(--text2);margin-top:10px">
+            Test card: 4084 0840 8408 4081 · Exp: 12/28 · CVV: 408
+          </p>
+        </div>
+      </div>
+
+      <button class="btn-ghost" onclick="goStep(1)">← Back</button>
+      <button class="btn-primary" onclick="goToReview()" style="margin-top:10px">Review order →</button>
+    </div>
+
+    <!-- PANEL 3: Review -->
+    <div class="panel" id="panel-3">
+      <div class="card">
+        <div class="card-title">Review your order</div>
+        <div id="review-delivery" style="font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:16px"></div>
+        <div style="font-size:12px;color:var(--text2);margin-bottom:4px">PAYMENT</div>
+        <div id="review-payment" style="font-size:13px;font-weight:500"></div>
+      </div>
+
+      <button class="btn-ghost" onclick="goStep(2)">← Back</button>
+      <button class="btn-primary" id="place-btn" onclick="placeOrder()" style="margin-top:10px">
+        Place order · <span id="order-total-btn"></span>
+      </button>
+      <button class="btn-primary" onclick="payWithPaystack()"
+        style="margin-top:10px;background:linear-gradient(135deg,#00C3F7,#0070BA)">
+        🔐 Pay with Paystack
+      </button>
+    </div>
+
+    <!-- SUCCESS PANEL -->
+    <div class="panel" id="panel-success">
+      <div class="success-panel">
+        <div class="success-icon">🎉</div>
+        <div class="success-title">Order placed!</div>
+        <div class="success-sub">Thank you for shopping on ReelMart</div>
+        <div class="order-num" id="order-num-display">Order #RM-2026-00000</div>
+        <p style="font-size:13px;color:var(--text2);margin-bottom:24px">
+          We'll send you updates as your order is processed and shipped.
+        </p>
+        <button class="btn-primary" onclick="window.location.href='/'">Continue shopping</button>
+        <button class="btn-ghost" onclick="window.location.href='/orders.html'" style="margin-top:10px">View my orders</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT COLUMN: Order Summary -->
+  <div>
+    <div class="summary-card">
+      <div class="summary-title">Order summary</div>
+      <div id="summary-items">
+        <div class="empty-cart">
+          <div class="empty-cart-icon">🛒</div>
+          <div>Your cart is empty</div>
+          <a href="/" style="color:var(--accent);font-size:13px;margin-top:8px;display:block">Shop now →</a>
+        </div>
+      </div>
+      <div class="summary-divider"></div>
+      <div class="summary-row"><span>Subtotal</span><span id="subtotal">₦0</span></div>
+      <div class="summary-row"><span>Delivery</span><span id="delivery-display">Free</span></div>
+      <div class="summary-row"><span>VAT (7.5%)</span><span id="vat-display">₦0</span></div>
+      <div class="summary-row total"><span>Total</span><span id="grand-total">₦0</span></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── State ─────────────────────────────────────────────────────
+let cart         = JSON.parse(localStorage.getItem('reelmartCart') || '[]');
+let deliveryFee  = 0;
+let deliveryMethod = 'standard';
+let paymentMethod  = 'card';
+let currentStep  = 1;
+
+// ── Render order summary from real cart ───────────────────────
+function renderSummary() {
+  const container = document.getElementById('summary-items');
+
+  if (!cart.length) {
+    container.innerHTML = `
+      <div class="empty-cart">
+        <div class="empty-cart-icon">🛒</div>
+        <div>Your cart is empty</div>
+        <a href="/" style="color:var(--accent);font-size:13px;margin-top:8px;display:block">Shop now →</a>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = cart.map(item => {
+    const imgSrc = item.image
+      ? (item.image.startsWith('http') ? item.image : 'http://localhost:3000/uploads/' + item.image)
+      : null;
+    const lineTotal = Number(item.price) * Number(item.quantity || 1);
+    return `
+      <div class="summary-item">
+        <div class="item-img">
+          ${imgSrc
+            ? `<img src="${imgSrc}" alt="${item.name}" onerror="this.parentElement.textContent='📦'">`
+            : '📦'}
+        </div>
+        <div class="item-details">
+          <div class="item-name">${item.name}</div>
+          <div class="item-qty">Qty: ${item.quantity || 1}</div>
+        </div>
+        <div class="item-price">₦${lineTotal.toLocaleString()}</div>
+      </div>`;
+  }).join('');
+
+  computeTotals();
+}
+
+// ── Compute totals ────────────────────────────────────────────
+function computeTotals() {
+  const subtotal = cart.reduce((s, i) => s + Number(i.price) * Number(i.quantity || 1), 0);
+  const vat      = Math.round((subtotal + deliveryFee) * 0.075);
+  const grand    = subtotal + deliveryFee + vat;
+
+  document.getElementById('subtotal').textContent      = '₦' + subtotal.toLocaleString();
+  document.getElementById('delivery-display').textContent = deliveryFee === 0 ? 'Free' : '₦' + deliveryFee.toLocaleString();
+  document.getElementById('vat-display').textContent   = '₦' + vat.toLocaleString();
+  document.getElementById('grand-total').textContent   = '₦' + grand.toLocaleString();
+  document.getElementById('order-total-btn').textContent = '₦' + grand.toLocaleString();
+
+  return grand;
+}
+
+// ── Step navigation ───────────────────────────────────────────
+function goStep(n) {
+  // Mark previous steps done
+  for (let i = 1; i < n; i++) {
+    document.getElementById('sc' + i).className = 'step-circle done';
+    document.getElementById('sc' + i).innerHTML = '<i class="ti ti-check" style="font-size:12px"></i>';
+    document.getElementById('sl' + i).className = 'step-label done';
+    if (document.getElementById('line' + i)) document.getElementById('line' + i).classList.add('done');
+  }
+  // Mark current step active
+  document.getElementById('sc' + n).className = 'step-circle active';
+  document.getElementById('sl' + n).className = 'step-label active';
+
+  // Show panel
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + n).classList.add('active');
+  currentStep = n;
+  window.scrollTo(0, 0);
+}
+
+function goToPayment() {
+  const firstname = document.getElementById('firstname').value.trim();
+  const phone     = document.getElementById('phone').value.trim();
+  const address   = document.getElementById('address').value.trim();
+  const city      = document.getElementById('city').value.trim();
+  const state     = document.getElementById('state').value;
+
+  if (!firstname || !phone || !address || !city || !state) {
+    showToast('Please fill in all delivery details', true);
+    return;
+  }
+  goStep(2);
+}
+
+function goToReview() {
+  // Update review panel with delivery + payment info
+  const firstname = document.getElementById('firstname').value.trim();
+  const lastname  = document.getElementById('lastname').value.trim();
+  const phone     = document.getElementById('phone').value.trim();
+  const address   = document.getElementById('address').value.trim();
+  const city      = document.getElementById('city').value.trim();
+  const state     = document.getElementById('state').value;
+
+  document.getElementById('review-delivery').innerHTML = `
+    <strong>${firstname} ${lastname}</strong><br>
+    ${phone}<br>${address}, ${city}, ${state}<br>
+    <span style="color:var(--accent)">
+      ${deliveryMethod === 'express' ? 'Express delivery — ₦2,500' : 'Standard delivery — Free'}
+    </span>`;
+
+  const payNames = { card:'Credit/Debit Card', transfer:'Bank Transfer', ussd:'USSD', paystack:'Paystack' };
+  document.getElementById('review-payment').textContent = payNames[paymentMethod] || 'Card';
+
+  goStep(3);
+}
+
+// ── Delivery selection ────────────────────────────────────────
+function selectDelivery(method, fee) {
+  deliveryMethod = method;
+  deliveryFee    = fee;
+  document.querySelectorAll('.delivery-option').forEach(o => o.classList.remove('selected'));
+  document.getElementById('opt-' + method).classList.add('selected');
+  computeTotals();
+}
+
+// ── Payment selection ─────────────────────────────────────────
+function selectPayment(method) {
+  paymentMethod = method;
+  document.querySelectorAll('.pay-option').forEach(o => o.classList.remove('active'));
+  document.getElementById('pay-' + method).classList.add('active');
+  document.getElementById('card-details').style.display = method === 'card' ? 'block' : 'none';
+}
+
+// ── Place order ───────────────────────────────────────────────
+async function payWithPaystack() {
+  const token = localStorage.getItem('reelmartToken');
+  if (!token) { showToast('Please sign in first', true); return; }
+  if (!cart.length) { showToast('Your cart is empty', true); return; }
+
+  // First place the order
+  const firstname = document.getElementById('firstname').value.trim();
+  const lastname  = document.getElementById('lastname').value.trim();
+  const phone     = document.getElementById('phone').value.trim();
+  const address   = document.getElementById('address').value.trim();
+  const city      = document.getElementById('city').value.trim();
+  const state     = document.getElementById('state').value;
+
+  if (!firstname || !phone || !address || !city || !state) {
+    showToast('Please fill in all delivery details', true);
+    goStep(1);
+    return;
+  }
+
+  const orderItems = cart.map(item => ({
+    product: item._id, name: item.name,
+    price: Number(item.price), quantity: Number(item.quantity || 1), image: item.image || ''
+  }));
+  const grand = computeTotals();
+
+  const btn = document.getElementById('place-btn');
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Processing...';
+
+  try {
+    // Create the order first
+    const orderRes = await fetch('http://localhost:3000/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({
+        items: orderItems, totalAmount: grand,
+        fullName: firstname + ' ' + lastname,
+        phone, address, city, state, paymentMethod, deliveryMethod
+      })
+    });
+    const orderData = await orderRes.json();
+    if (!orderRes.ok) { showToast(orderData.message || 'Order failed', true); btn.disabled = false; btn.innerHTML = 'Pay with Paystack'; return; }
+
+    // Then initialize Paystack
+    const payRes = await fetch('http://localhost:3000/api/payments/initialize', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ orderId: orderData.order._id })
+    });
+    const payData = await payRes.json();
+    if (!payData.success) { showToast(payData.message || 'Payment init failed', true); btn.disabled = false; btn.innerHTML = 'Pay with Paystack'; return; }
+
+    // Keep cart until Paystack verification succeeds.
+    window.location.href = payData.data.authorization_url;
+
+  } catch (err) {
+    showToast('Could not connect to server', true);
+    btn.disabled = false;
+    btn.innerHTML = 'Pay with Paystack';
+  }
+}
+
+async function placeOrder() {
+  const token = localStorage.getItem('reelmartToken');
+  const user  = JSON.parse(localStorage.getItem('reelmartUser') || 'null');
+
+  if (!token || !user) {
+    showToast('Please sign in to place an order', true);
+    setTimeout(() => window.location.href = '/auth.html', 1500);
+    return;
+  }
+
+  if (!cart.length) {
+    showToast('Your cart is empty', true);
+    return;
+  }
+
+  const firstname = document.getElementById('firstname').value.trim();
+  const lastname  = document.getElementById('lastname').value.trim();
+  const phone     = document.getElementById('phone').value.trim();
+  const address   = document.getElementById('address').value.trim();
+  const city      = document.getElementById('city').value.trim();
+  const state     = document.getElementById('state').value;
+
+  if (!firstname || !phone || !address || !city || !state) {
+    showToast('Please fill in all delivery details', true);
+    goStep(1);
+    return;
+  }
+
+  const orderItems = cart.map(item => ({
+    product:  item._id,
+    name:     item.name,
+    price:    Number(item.price),
+    quantity: Number(item.quantity || 1),
+    image:    item.image || ''
+  }));
+
+  const grand = computeTotals();
+
+  const btn = document.getElementById('place-btn');
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Processing...';
+
+  try {
+    const res  = await fetch('http://localhost:3000/api/orders', {
+      method:  'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({
+        items:         orderItems,
+        totalAmount:   grand,
+        fullName:      firstname + ' ' + lastname,
+        phone,
+        address,
+        city,
+        state,
+        paymentMethod,
+        deliveryMethod
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      showToast(data.message || 'Order failed. Please try again.', true);
+      btn.disabled = false;
+      btn.innerHTML = 'Place order · <span id="order-total-btn">₦' + grand.toLocaleString() + '</span>';
+      return;
+    }
+
+    // Clear cart
+    localStorage.removeItem('reelmartCart');
+
+    // Show success
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-success').classList.add('active');
+    document.getElementById('order-num-display').textContent = 'Order #' + data.order.orderNumber;
+
+    // Mark all steps done
+    for (let i = 1; i <= 3; i++) {
+      document.getElementById('sc' + i).className = 'step-circle done';
+      document.getElementById('sc' + i).innerHTML = '<i class="ti ti-check" style="font-size:12px"></i>';
+      document.getElementById('sl' + i).className = 'step-label done';
+    }
+
+    showToast('Order placed successfully! 🎉');
+
+  } catch (err) {
+    console.error('Order error:', err);
+    showToast('Could not connect to server. Please try again.', true);
+    btn.disabled = false;
+    btn.innerHTML = 'Place order · ₦' + grand.toLocaleString();
+  }
+}
+
+// ── Toast ─────────────────────────────────────────────────────
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── Boot ──────────────────────────────────────────────────────
+renderSummary();
+</script>
+</body>
+</html>

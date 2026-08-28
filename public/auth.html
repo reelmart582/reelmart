@@ -1,0 +1,910 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --accent: #F5A623;
+  --accent2: #E8522A;
+  --dark: #141414;
+  --surface: #1E1E1E;
+  --surface2: #2A2A2A;
+  --surface3: #333;
+  --text: #F0EEE8;
+  --text2: #AAAAAA;
+  --success: #3DAA6A;
+  --error: #E85252;
+}
+
+body { font-family: 'DM Sans', sans-serif; background: var(--dark); color: var(--text); }
+
+#app { display: flex; height: 620px; overflow: hidden; }
+
+/* LEFT PANEL — branding */
+.left-panel {
+  width: 260px; flex-shrink: 0;
+  background: #0E0E0E;
+  border-right: 0.5px solid #2A2A2A;
+  display: flex; flex-direction: column;
+  padding: 32px 28px;
+  position: relative; overflow: hidden;
+}
+
+.brand-glow {
+  position: absolute; top: -60px; left: -60px;
+  width: 220px; height: 220px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(245,166,35,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.brand-glow2 {
+  position: absolute; bottom: -80px; right: -80px;
+  width: 260px; height: 260px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,82,42,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.brand-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px; font-weight: 900;
+  letter-spacing: -0.5px; margin-bottom: 6px;
+}
+.brand-logo span { color: var(--accent); }
+.brand-tagline { font-size: 12px; color: var(--text2); margin-bottom: 40px; }
+
+.reel-previews { display: flex; flex-direction: column; gap: 10px; margin-bottom: 36px; }
+.reel-prev {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--surface); border-radius: 10px; padding: 10px 12px;
+  border: 0.5px solid #2A2A2A;
+}
+.rp-thumb {
+  width: 38px; height: 44px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+  flex-shrink: 0;
+}
+.rp1 { background: radial-gradient(ellipse, #4A1A6A, #1A0A2A); }
+.rp2 { background: radial-gradient(ellipse, #1A4A2A, #0A1E14); }
+.rp3 { background: radial-gradient(ellipse, #4A1A10, #1E0A06); }
+.rp-info { flex: 1; min-width: 0; }
+.rp-name { font-size: 12px; font-weight: 500; }
+.rp-price { font-size: 12px; color: var(--accent); margin-top: 1px; }
+.rp-views { font-size: 10px; color: var(--text2); margin-top: 1px; }
+
+.brand-perks { display: flex; flex-direction: column; gap: 10px; margin-top: auto; }
+.perk { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text2); }
+.perk-icon { width: 24px; height: 24px; border-radius: 6px; background: rgba(245,166,35,0.1); display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 13px; flex-shrink: 0; }
+
+/* RIGHT PANEL — forms */
+.right-panel {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: flex-start;
+  overflow-y: auto; scrollbar-width: none; padding: 28px 24px;
+}
+.right-panel::-webkit-scrollbar { display: none; }
+
+/* Tab switcher */
+.tab-bar {
+  display: flex; background: var(--surface); border-radius: 12px;
+  padding: 4px; gap: 4px; width: 100%; max-width: 360px; margin-bottom: 28px;
+}
+.tab-btn {
+  flex: 1; padding: 9px 0; border-radius: 9px; border: none;
+  font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif;
+  cursor: pointer; transition: all 0.2s; color: var(--text2); background: transparent;
+}
+.tab-btn.active { background: var(--accent); color: #111; }
+
+/* Form card */
+.form-card { width: 100%; max-width: 360px; }
+
+.form-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px; font-weight: 700; margin-bottom: 4px;
+}
+.form-subtitle { font-size: 13px; color: var(--text2); margin-bottom: 22px; line-height: 1.5; }
+
+/* Social login */
+.social-row { display: flex; gap: 8px; margin-bottom: 18px; }
+.social-btn {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
+  background: var(--surface); border: 0.5px solid var(--surface3);
+  color: var(--text); padding: 10px 0; border-radius: 10px;
+  font-size: 12px; font-weight: 500; font-family: 'DM Sans', sans-serif;
+  cursor: pointer; transition: border-color 0.15s;
+}
+.social-btn:hover { border-color: rgba(245,166,35,0.4); }
+
+.divider-row {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 18px;
+}
+.divider-line { flex: 1; height: 0.5px; background: var(--surface3); }
+.divider-text { font-size: 11px; color: var(--text2); white-space: nowrap; }
+
+/* Fields */
+.field { margin-bottom: 14px; }
+.field label {
+  display: block; font-size: 11px; color: var(--text2);
+  text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;
+}
+.input-wrap { position: relative; }
+.field input {
+  width: 100%; background: var(--surface); border: 0.5px solid var(--surface3);
+  color: var(--text); padding: 11px 14px; border-radius: 10px;
+  font-size: 13px; font-family: 'DM Sans', sans-serif;
+  outline: none; transition: border-color 0.15s;
+}
+.field input:focus { border-color: var(--accent); }
+.field input::placeholder { color: var(--text2); }
+.field input.error { border-color: var(--error); }
+.field input.valid { border-color: var(--success); }
+.field-err { font-size: 11px; color: var(--error); margin-top: 4px; display: none; }
+.field-err.show { display: block; }
+
+.eye-btn {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; color: var(--text2); cursor: pointer;
+  font-size: 16px; padding: 2px; transition: color 0.15s;
+}
+.eye-btn:hover { color: var(--text); }
+
+/* Password strength */
+.strength-bar { display: flex; gap: 4px; margin-top: 8px; }
+.strength-seg { flex: 1; height: 3px; border-radius: 2px; background: var(--surface3); transition: background 0.2s; }
+.strength-label { font-size: 10px; margin-top: 4px; }
+
+/* Name row */
+.name-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* Avatar picker */
+.avatar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.avatar-preview {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--accent); color: #111; font-weight: 700; font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid rgba(245,166,35,0.4); flex-shrink: 0;
+}
+.avatar-info { flex: 1; }
+.avatar-label { font-size: 12px; font-weight: 500; margin-bottom: 3px; }
+.avatar-sub { font-size: 11px; color: var(--text2); }
+
+/* Checkbox */
+.check-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 18px; }
+.custom-check {
+  width: 16px; height: 16px; border-radius: 4px; flex-shrink: 0;
+  border: 1.5px solid var(--surface3); background: var(--surface);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; margin-top: 1px;
+}
+.custom-check.checked { border-color: var(--accent); background: var(--accent); }
+.check-label { font-size: 12px; color: var(--text2); line-height: 1.5; cursor: pointer; }
+.check-label a { color: var(--accent); cursor: pointer; }
+
+/* Submit button */
+.submit-btn {
+  width: 100%; background: var(--accent); color: #111;
+  border: none; padding: 13px 0; border-radius: 28px;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: transform 0.15s; margin-bottom: 14px;
+}
+.submit-btn:hover { transform: scale(1.015); }
+.submit-btn:active { transform: scale(0.985); }
+.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.switch-text {
+  text-align: center; font-size: 13px; color: var(--text2);
+}
+.switch-text a { color: var(--accent); cursor: pointer; font-weight: 500; }
+
+/* Forgot password overlay */
+.forgot-panel { display: none; width: 100%; max-width: 360px; }
+.forgot-panel.show { display: block; }
+.form-card.hidden { display: none; }
+
+/* OTP input */
+.otp-row { display: flex; gap: 8px; justify-content: center; margin-bottom: 18px; }
+.otp-input {
+  width: 44px; height: 52px; text-align: center;
+  background: var(--surface); border: 0.5px solid var(--surface3);
+  color: var(--text); font-size: 20px; font-weight: 500;
+  border-radius: 10px; outline: none; transition: border-color 0.15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.otp-input:focus { border-color: var(--accent); }
+.otp-input.filled { border-color: var(--success); color: var(--success); }
+
+/* Success state */
+.auth-success {
+  display: none; flex-direction: column; align-items: center;
+  text-align: center; gap: 12px; padding: 20px 0;
+  width: 100%; max-width: 360px;
+}
+.auth-success.show { display: flex; }
+.success-circle {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: rgba(61,170,106,0.15); border: 1.5px solid var(--success);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--success); font-size: 28px;
+  animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes popIn { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
+.success-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; }
+.success-sub { font-size: 13px; color: var(--text2); line-height: 1.6; max-width: 280px; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 18px; left: 50%;
+  transform: translateX(-50%) translateY(60px);
+  background: var(--accent); color: #111;
+  padding: 9px 20px; border-radius: 24px;
+  font-size: 12px; font-weight: 500; font-family: 'DM Sans', sans-serif;
+  opacity: 0; transition: all 0.3s; z-index: 99; white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+</style>
+
+<div id="app">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <div class="brand-glow"></div>
+    <div class="brand-glow2"></div>
+
+    <div class="brand-logo">Reel<span>Mart</span></div>
+    <div class="brand-tagline">Shop what you see in the reel.</div>
+
+    <div class="reel-previews">
+      <div class="reel-prev">
+        <div class="rp-thumb rp1">👟</div>
+        <div class="rp-info">
+          <div class="rp-name">Air Force One</div>
+          <div class="rp-price">₦45,000</div>
+          <div class="rp-views">12.4K views</div>
+        </div>
+      </div>
+      <div class="reel-prev">
+        <div class="rp-thumb rp2">👜</div>
+        <div class="rp-info">
+          <div class="rp-name">Canvas Tote</div>
+          <div class="rp-price">₦28,000</div>
+          <div class="rp-views">8.1K views</div>
+        </div>
+      </div>
+      <div class="reel-prev">
+        <div class="rp-thumb rp3">⌚</div>
+        <div class="rp-info">
+          <div class="rp-name">Smart Watch X</div>
+          <div class="rp-price">₦85,000</div>
+          <div class="rp-views">20K views</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="brand-perks">
+      <div class="perk"><div class="perk-icon"><i class="ti ti-player-play" aria-hidden="true"></i></div>Shop directly from reels</div>
+      <div class="perk"><div class="perk-icon"><i class="ti ti-shield-lock" aria-hidden="true"></i></div>Secure buyer protection</div>
+      <div class="perk"><div class="perk-icon"><i class="ti ti-truck" aria-hidden="true"></i></div>Fast delivery nationwide</div>
+      <div class="perk"><div class="perk-icon"><i class="ti ti-bell" aria-hidden="true"></i></div>Restock alerts on saved items</div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel" id="right-panel">
+
+    <!-- Tab bar -->
+    <div class="tab-bar" id="tab-bar">
+      <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Sign in</button>
+      <button class="tab-btn" id="tab-register" onclick="switchTab('register')">Create account</button>
+    </div>
+
+    <!-- ===== LOGIN FORM ===== -->
+    <div class="form-card" id="login-form">
+      <div class="form-title">Welcome back</div>
+      <div class="form-subtitle">Sign in to your ReelMart account to continue shopping.</div>
+
+      <div class="social-row">
+        <button class="social-btn" onclick="socialLogin('Google')">
+          <i class="ti ti-brand-google" aria-hidden="true"></i> Google
+        </button>
+        <button class="social-btn" onclick="socialLogin('Apple')">
+          <i class="ti ti-brand-apple" aria-hidden="true"></i> Apple
+        </button>
+      </div>
+
+      <div class="divider-row">
+        <div class="divider-line"></div>
+        <span class="divider-text">or continue with email</span>
+        <div class="divider-line"></div>
+      </div>
+
+      <div class="field">
+        <label>Email address</label>
+        <div class="input-wrap">
+          <input type="email" id="l-email" placeholder="you@email.com"
+            oninput="validateEmail(this, 'l-email-err')" onblur="validateEmail(this,'l-email-err')"/>
+        </div>
+        <div class="field-err" id="l-email-err">Enter a valid email address</div>
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <div class="input-wrap">
+          <input type="password" id="l-pass" placeholder="Your password"
+            oninput="clearFieldErr('l-pass','l-pass-err')"/>
+          <button class="eye-btn" onclick="toggleEye('l-pass', this)" aria-label="Toggle password visibility">
+            <i class="ti ti-eye" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div class="field-err" id="l-pass-err">Password is required</div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+        <a style="font-size:12px;color:var(--accent);cursor:pointer" onclick="showForgot()">Forgot password?</a>
+      </div>
+
+      <button class="submit-btn" id="login-btn" onclick="doLogin()">
+        <i class="ti ti-login" aria-hidden="true"></i> Sign in
+      </button>
+
+      <div class="switch-text">
+        Don't have an account? <a onclick="switchTab('register')">Create one</a>
+      </div>
+    </div>
+
+    <!-- ===== REGISTER FORM ===== -->
+    <div class="form-card hidden" id="register-form">
+      <div class="form-title">Create account</div>
+      <div class="form-subtitle">Join ReelMart and start shopping products you discover in reels.</div>
+
+      <div class="social-row">
+        <button class="social-btn" onclick="socialLogin('Google')">
+          <i class="ti ti-brand-google" aria-hidden="true"></i> Google
+        </button>
+        <button class="social-btn" onclick="socialLogin('Apple')">
+          <i class="ti ti-brand-apple" aria-hidden="true"></i> Apple
+        </button>
+      </div>
+
+      <div class="divider-row">
+        <div class="divider-line"></div>
+        <span class="divider-text">or sign up with email</span>
+        <div class="divider-line"></div>
+      </div>
+
+      <div class="avatar-row">
+        <div class="avatar-preview" id="avatar-preview">?</div>
+        <div class="avatar-info">
+          <div class="avatar-label">Profile avatar</div>
+          <div class="avatar-sub">Auto-generated from your initials</div>
+        </div>
+      </div>
+
+      <div class="name-row">
+        <div class="field">
+          <label>First name</label>
+          <input type="text" id="r-fname" placeholder="Adaeze"
+            oninput="updateAvatar(); clearFieldErr('r-fname','r-fname-err')"/>
+          <div class="field-err" id="r-fname-err">Required</div>
+        </div>
+        <div class="field">
+          <label>Last name</label>
+          <input type="text" id="r-lname" placeholder="Okafor"
+            oninput="updateAvatar(); clearFieldErr('r-lname','r-lname-err')"/>
+          <div class="field-err" id="r-lname-err">Required</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Email address</label>
+        <div class="input-wrap">
+          <input type="email" id="r-email" placeholder="you@email.com"
+            oninput="validateEmail(this,'r-email-err')" onblur="validateEmail(this,'r-email-err')"/>
+        </div>
+        <div class="field-err" id="r-email-err">Enter a valid email address</div>
+      </div>
+
+      <div class="field">
+        <label>Phone number</label>
+        <div class="input-wrap">
+          <input type="tel" id="r-phone" placeholder="08012345678" maxlength="11"
+            oninput="validatePhone(this,'r-phone-err')"/>
+        </div>
+        <div class="field-err" id="r-phone-err">Enter a valid Nigerian phone number</div>
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        <div class="input-wrap">
+          <input type="password" id="r-pass" placeholder="Create a strong password"
+            oninput="checkStrength(this.value)"/>
+          <button class="eye-btn" onclick="toggleEye('r-pass', this)" aria-label="Toggle password visibility">
+            <i class="ti ti-eye" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div class="strength-bar">
+          <div class="strength-seg" id="seg1"></div>
+          <div class="strength-seg" id="seg2"></div>
+          <div class="strength-seg" id="seg3"></div>
+          <div class="strength-seg" id="seg4"></div>
+        </div>
+        <div class="strength-label" id="strength-label" style="color:var(--text2)">Enter a password</div>
+        <div class="field-err" id="r-pass-err">At least 8 characters required</div>
+      </div>
+
+      <div class="field">
+        <label>Confirm password</label>
+        <div class="input-wrap">
+          <input type="password" id="r-confirm" placeholder="Repeat your password"
+            oninput="checkConfirm(this)"/>
+          <button class="eye-btn" onclick="toggleEye('r-confirm', this)" aria-label="Toggle password visibility">
+            <i class="ti ti-eye" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div class="field-err" id="r-confirm-err">Passwords do not match</div>
+      </div>
+
+      <div class="check-row">
+        <div class="custom-check" id="terms-check" onclick="toggleCheck(this)"></div>
+        <div class="check-label" onclick="toggleCheck(document.getElementById('terms-check'))">
+          I agree to the <a>Terms of Service</a> and <a>Privacy Policy</a>
+        </div>
+      </div>
+
+      <div class="check-row" style="margin-bottom:20px">
+        <div class="custom-check checked" id="promo-check" onclick="toggleCheck(this)"></div>
+        <div class="check-label" onclick="toggleCheck(document.getElementById('promo-check'))">
+          Send me exclusive deals and reel drops via email
+        </div>
+      </div>
+
+      <button class="submit-btn" id="register-btn" onclick="doRegister()">
+        <i class="ti ti-user-plus" aria-hidden="true"></i> Create account
+      </button>
+
+      <div class="switch-text">
+        Already have an account? <a onclick="switchTab('login')">Sign in</a>
+      </div>
+    </div>
+
+    <!-- ===== FORGOT PASSWORD ===== -->
+    <div class="forgot-panel" id="forgot-panel">
+      <div class="form-card" id="forgot-step1">
+        <div style="margin-bottom:16px">
+          <button style="background:none;border:none;color:var(--text2);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:5px;padding:0" onclick="hideForgot()">
+            <i class="ti ti-arrow-left" aria-hidden="true"></i> Back to sign in
+          </button>
+        </div>
+        <div class="form-title">Reset password</div>
+        <div class="form-subtitle">Enter your email and we'll send you a 6-digit code to reset your password.</div>
+
+        <div class="field">
+          <label>Email address</label>
+          <input type="email" id="fp-email" placeholder="you@email.com"/>
+          <div class="field-err" id="fp-email-err">Enter a valid email</div>
+        </div>
+
+        <button class="submit-btn" onclick="sendResetCode()">
+          <i class="ti ti-send" aria-hidden="true"></i> Send reset code
+        </button>
+      </div>
+
+      <!-- OTP step -->
+      <div class="form-card hidden" id="forgot-step2">
+        <div class="form-title">Enter OTP</div>
+        <div class="form-subtitle" id="otp-subtitle">We sent a 6-digit code to your email. Enter it below.</div>
+
+        <div class="otp-row">
+          <input class="otp-input" maxlength="1" id="otp1" oninput="otpNext(this,null,'otp2')" onkeydown="otpBack(event,this,null)"/>
+          <input class="otp-input" maxlength="1" id="otp2" oninput="otpNext(this,'otp1','otp3')" onkeydown="otpBack(event,this,'otp1')"/>
+          <input class="otp-input" maxlength="1" id="otp3" oninput="otpNext(this,'otp2','otp4')" onkeydown="otpBack(event,this,'otp2')"/>
+          <input class="otp-input" maxlength="1" id="otp4" oninput="otpNext(this,'otp3','otp5')" onkeydown="otpBack(event,this,'otp3')"/>
+          <input class="otp-input" maxlength="1" id="otp5" oninput="otpNext(this,'otp4','otp6')" onkeydown="otpBack(event,this,'otp4')"/>
+          <input class="otp-input" maxlength="1" id="otp6" oninput="otpNext(this,'otp5',null)" onkeydown="otpBack(event,this,'otp5')"/>
+        </div>
+
+        <div style="text-align:center;font-size:12px;color:var(--text2);margin-bottom:18px">
+          Didn't get it? <a style="color:var(--accent);cursor:pointer" onclick="resendCode()">Resend code</a>
+          <span id="resend-timer" style="color:var(--text2)"></span>
+        </div>
+
+        <button class="submit-btn" onclick="verifyOTP()">
+          <i class="ti ti-check" aria-hidden="true"></i> Verify code
+        </button>
+      </div>
+
+      <!-- New password step -->
+      <div class="form-card hidden" id="forgot-step3">
+        <div class="form-title">New password</div>
+        <div class="form-subtitle">Choose a strong new password for your account.</div>
+
+        <div class="field">
+          <label>New password</label>
+          <div class="input-wrap">
+            <input type="password" id="np-pass" placeholder="New password" oninput="checkStrength(this.value,'np')"/>
+            <button class="eye-btn" onclick="toggleEye('np-pass', this)" aria-label="Toggle password visibility"><i class="ti ti-eye" aria-hidden="true"></i></button>
+          </div>
+          <div class="strength-bar">
+            <div class="strength-seg" id="np-seg1"></div>
+            <div class="strength-seg" id="np-seg2"></div>
+            <div class="strength-seg" id="np-seg3"></div>
+            <div class="strength-seg" id="np-seg4"></div>
+          </div>
+          <div class="strength-label" id="np-strength-label" style="color:var(--text2)">Enter a password</div>
+        </div>
+
+        <div class="field">
+          <label>Confirm new password</label>
+          <div class="input-wrap">
+            <input type="password" id="np-confirm" placeholder="Repeat password"/>
+            <button class="eye-btn" onclick="toggleEye('np-confirm', this)" aria-label="Toggle password visibility"><i class="ti ti-eye" aria-hidden="true"></i></button>
+          </div>
+          <div class="field-err" id="np-confirm-err">Passwords do not match</div>
+        </div>
+
+        <button class="submit-btn" onclick="resetPassword()">
+          <i class="ti ti-lock" aria-hidden="true"></i> Reset password
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== SUCCESS ===== -->
+    <div class="auth-success" id="auth-success">
+      <div class="success-circle"><i class="ti ti-check" style="font-size:28px" aria-hidden="true"></i></div>
+      <div class="success-title" id="success-title">Welcome to ReelMart!</div>
+      <div class="success-sub" id="success-sub">Your account has been created. You can now shop products from reels.</div>
+      <button class="submit-btn" style="max-width:240px;margin-top:4px" onclick="window.location.href='/'">
+        <i class="ti ti-home" aria-hidden="true"></i> Go to homepage
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let termsChecked = false
+let promoChecked = true
+let resendInterval = null
+
+function showToast(msg, isError) {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.style.background = isError ? 'var(--error)' : 'var(--accent)'
+  t.style.color = isError ? 'white' : '#111'
+  t.classList.add('show')
+  setTimeout(() => t.classList.remove('show'), 2400)
+}
+
+function switchTab(tab) {
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login')
+  document.getElementById('tab-register').classList.toggle('active', tab === 'register')
+  document.getElementById('login-form').classList.toggle('hidden', tab !== 'login')
+  document.getElementById('register-form').classList.toggle('hidden', tab !== 'register')
+  document.getElementById('forgot-panel').classList.remove('show')
+  document.getElementById('auth-success').classList.remove('show')
+  document.getElementById('tab-bar').style.display = 'flex'
+  document.getElementById('right-panel').scrollTop = 0
+}
+
+function toggleEye(inputId, btn) {
+  const inp = document.getElementById(inputId)
+  const isPass = inp.type === 'password'
+  inp.type = isPass ? 'text' : 'password'
+  btn.innerHTML = isPass
+    ? '<i class="ti ti-eye-off" aria-hidden="true"></i>'
+    : '<i class="ti ti-eye" aria-hidden="true"></i>'
+}
+
+function validateEmail(inp, errId) {
+  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inp.value)
+  const err = document.getElementById(errId)
+  if (inp.value && !valid) {
+    inp.classList.add('error'); inp.classList.remove('valid')
+    err.classList.add('show')
+  } else if (inp.value && valid) {
+    inp.classList.remove('error'); inp.classList.add('valid')
+    err.classList.remove('show')
+  } else {
+    inp.classList.remove('error','valid'); err.classList.remove('show')
+  }
+}
+
+function validatePhone(inp, errId) {
+  const valid = /^0[789][01]\d{8}$/.test(inp.value)
+  const err = document.getElementById(errId)
+  if (inp.value.length === 11) {
+    if (!valid) { inp.classList.add('error'); err.classList.add('show') }
+    else { inp.classList.remove('error'); inp.classList.add('valid'); err.classList.remove('show') }
+  } else {
+    inp.classList.remove('error','valid'); err.classList.remove('show')
+  }
+}
+
+function clearFieldErr(inputId, errId) {
+  document.getElementById(inputId)?.classList.remove('error')
+  document.getElementById(errId)?.classList.remove('show')
+}
+
+function updateAvatar() {
+  const f = document.getElementById('r-fname').value.trim()
+  const l = document.getElementById('r-lname').value.trim()
+  const av = document.getElementById('avatar-preview')
+  const initials = (f[0] || '') + (l[0] || '') || '?'
+  av.textContent = initials.toUpperCase()
+}
+
+function checkStrength(val, prefix) {
+  const p = prefix || ''
+  const segs = [
+    document.getElementById((p ? p+'-' : '') + 'seg1'),
+    document.getElementById((p ? p+'-' : '') + 'seg2'),
+    document.getElementById((p ? p+'-' : '') + 'seg3'),
+    document.getElementById((p ? p+'-' : '') + 'seg4'),
+  ].filter(Boolean)
+  const label = document.getElementById((p ? p+'-' : '') + 'strength-label')
+  if (!label) return
+
+  let score = 0
+  if (val.length >= 8) score++
+  if (/[A-Z]/.test(val)) score++
+  if (/[0-9]/.test(val)) score++
+  if (/[^A-Za-z0-9]/.test(val)) score++
+
+  const colors = ['','#E85252','#F5A623','#F5A623','#3DAA6A']
+  const labels = ['Enter a password','Weak','Fair','Good','Strong']
+  const labelColors = ['var(--text2)','var(--error)','var(--accent)','var(--accent)','var(--success)']
+
+  segs.forEach((s,i) => {
+    s.style.background = i < score ? colors[score] : 'var(--surface3)'
+  })
+  label.textContent = val ? labels[score] : 'Enter a password'
+  label.style.color = val ? labelColors[score] : 'var(--text2)'
+}
+
+function checkConfirm(inp) {
+  const pass = document.getElementById('r-pass').value
+  const err = document.getElementById('r-confirm-err')
+  if (inp.value && inp.value !== pass) {
+    inp.classList.add('error'); err.classList.add('show')
+  } else {
+    inp.classList.remove('error'); err.classList.remove('show')
+    if (inp.value) inp.classList.add('valid')
+  }
+}
+
+function toggleCheck(el) {
+  el.classList.toggle('checked')
+  if (el.id === 'terms-check') termsChecked = el.classList.contains('checked')
+  if (el.id === 'promo-check') promoChecked = el.classList.contains('checked')
+}
+
+function socialLogin(provider) {
+  showToast('Redirecting to ' + provider + '...')
+  setTimeout(() => showSuccess('social'), 1200)
+}
+
+async function doLogin() {
+  const email = document.getElementById('l-email').value.trim()
+  const pass  = document.getElementById('l-pass').value
+
+  let valid = true
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    document.getElementById('l-email').classList.add('error')
+    document.getElementById('l-email-err').classList.add('show')
+    valid = false
+  }
+  if (!pass) {
+    document.getElementById('l-pass').classList.add('error')
+    document.getElementById('l-pass-err').classList.add('show')
+    valid = false
+  }
+  if (!valid) { showToast('Please fix the errors above', true); return }
+
+  const btn = document.getElementById('login-btn')
+  btn.disabled = true
+  btn.innerHTML = '<i class="ti ti-loader-2" style="animation:spin 1s linear infinite;font-size:16px"></i> Signing in...'
+  const style = document.createElement('style')
+  style.textContent = '@keyframes spin{to{transform:rotate(360deg)}}'
+  document.head.appendChild(style)
+
+  try {
+    const res  = await fetch('http://localhost:3000/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pass })
+    })
+    const data = await res.json()
+
+    if (!res.ok) {
+      showToast(data.message || 'Login failed', true)
+      btn.disabled = false
+      btn.innerHTML = '<i class="ti ti-login"></i> Sign in'
+      return
+    }
+
+    // Save token and user to localStorage
+    localStorage.setItem('reelmartToken', data.token)
+    localStorage.setItem('reelmartUser', JSON.stringify(data.user))
+
+    showToast('Welcome back ' + data.user.fullName + '! ✓')
+
+    // Return the user to the page that required authentication.
+    const params = new URLSearchParams(window.location.search)
+    const returnTo = params.get('returnTo')
+    setTimeout(() => {
+      if (returnTo && returnTo.startsWith('/')) {
+        window.location.href = returnTo
+      } else if (data.user.role === 'admin') {
+        window.location.href = '/admin.html'
+      } else if (data.user.role === 'seller') {
+        window.location.href = '/seller_dashboard.html'
+      } else {
+        window.location.href = '/'
+      }
+    }, 700)
+
+  } catch (err) {
+    showToast('Cannot connect to server. Is it running?', true)
+    btn.disabled = false
+    btn.innerHTML = '<i class="ti ti-login"></i> Sign in'
+  }
+}
+
+async function doRegister() {
+  const fname   = document.getElementById('r-fname').value.trim()
+  const lname   = document.getElementById('r-lname').value.trim()
+  const email   = document.getElementById('r-email').value.trim()
+  const pass    = document.getElementById('r-pass').value
+  const confirm = document.getElementById('r-confirm').value
+
+  let valid = true
+  if (!fname) { document.getElementById('r-fname').classList.add('error'); document.getElementById('r-fname-err').classList.add('show'); valid = false }
+  if (!lname) { document.getElementById('r-lname').classList.add('error'); document.getElementById('r-lname-err').classList.add('show'); valid = false }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    document.getElementById('r-email').classList.add('error')
+    document.getElementById('r-email-err').classList.add('show'); valid = false
+  }
+  if (!pass || pass.length < 8) {
+    document.getElementById('r-pass').classList.add('error')
+    document.getElementById('r-pass-err').classList.add('show'); valid = false
+  }
+  if (pass !== confirm) {
+    document.getElementById('r-confirm').classList.add('error')
+    document.getElementById('r-confirm-err').classList.add('show'); valid = false
+  }
+  if (!termsChecked) { showToast('Please accept the Terms of Service', true); return }
+  if (!valid) { showToast('Please fix the errors above', true); return }
+
+  const btn = document.getElementById('register-btn')
+  btn.disabled = true
+  btn.innerHTML = '<i class="ti ti-loader-2" style="animation:spin 1s linear infinite;font-size:16px" aria-hidden="true"></i> Creating account...'
+
+  try {
+    const res  = await fetch('http://localhost:3000/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fullName: fname + ' ' + lname, email, password: pass, role: 'seller' })
+    })
+    const data = await res.json()
+
+    if (!res.ok) {
+      showToast(data.message || 'Registration failed', true)
+      btn.disabled = false
+      btn.innerHTML = '<i class="ti ti-user-plus"></i> Create account'
+      return
+    }
+
+    showToast('Account created! Please sign in.')
+    setTimeout(() => switchTab('login'), 1500)
+    btn.disabled = false
+    btn.innerHTML = '<i class="ti ti-user-plus"></i> Create account'
+
+  } catch (err) {
+    showToast('Cannot connect to server. Is it running?', true)
+    btn.disabled = false
+    btn.innerHTML = '<i class="ti ti-user-plus"></i> Create account'
+  }
+}
+
+function showSuccess(type, name) {
+  document.getElementById('login-form').classList.add('hidden')
+  document.getElementById('register-form').classList.add('hidden')
+  document.getElementById('forgot-panel').classList.remove('show')
+  document.getElementById('tab-bar').style.display = 'none'
+
+  const title = document.getElementById('success-title')
+  const sub   = document.getElementById('success-sub')
+
+  if (type === 'login') {
+    title.textContent = 'Welcome back!'
+    sub.textContent   = 'You\'re now signed in. Redirecting you to your feed...'
+  } else if (type === 'register') {
+    title.textContent = 'Welcome, ' + (name || 'shopper') + '!'
+    sub.textContent   = 'Your account is ready. Start discovering products through reels.'
+  } else if (type === 'social') {
+    title.textContent = 'Signed in!'
+    sub.textContent   = 'You\'re all set. Start exploring ReelMart.'
+  } else if (type === 'reset') {
+    title.textContent = 'Password reset!'
+    sub.textContent   = 'Your password has been updated. Sign in with your new password.'
+  }
+
+  document.getElementById('auth-success').classList.add('show')
+}
+
+function showForgot() {
+  document.getElementById('login-form').classList.add('hidden')
+  document.getElementById('tab-bar').style.display = 'none'
+  document.getElementById('forgot-panel').classList.add('show')
+}
+
+function hideForgot() {
+  document.getElementById('forgot-panel').classList.remove('show')
+  document.getElementById('login-form').classList.remove('hidden')
+  document.getElementById('tab-bar').style.display = 'flex'
+}
+
+function sendResetCode() {
+  const email = document.getElementById('fp-email').value.trim()
+  if (!email) { document.getElementById('fp-email-err').classList.add('show'); return }
+  document.getElementById('otp-subtitle').textContent = 'We sent a 6-digit code to ' + email + '. Enter it below.'
+  document.getElementById('forgot-step1').classList.add('hidden')
+  document.getElementById('forgot-step2').classList.remove('hidden')
+  document.getElementById('otp1').focus()
+  showToast('Code sent to ' + email)
+  startResendTimer(30)
+}
+
+function startResendTimer(secs) {
+  if (resendInterval) clearInterval(resendInterval)
+  let s = secs
+  const timerEl = document.getElementById('resend-timer')
+  timerEl.textContent = ' (' + s + 's)'
+  resendInterval = setInterval(() => {
+    s--
+    if (s <= 0) { clearInterval(resendInterval); timerEl.textContent = '' }
+    else timerEl.textContent = ' (' + s + 's)'
+  }, 1000)
+}
+
+function resendCode() { showToast('Code resent!'); startResendTimer(30) }
+
+function otpNext(el, prevId, nextId) {
+  if (el.value) {
+    el.classList.add('filled')
+    if (nextId) document.getElementById(nextId).focus()
+  } else { el.classList.remove('filled') }
+}
+
+function otpBack(e, el, prevId) {
+  if (e.key === 'Backspace' && !el.value && prevId) {
+    const prev = document.getElementById(prevId)
+    prev.value = ''
+    prev.classList.remove('filled')
+    prev.focus()
+  }
+}
+
+function verifyOTP() {
+  const code = ['otp1','otp2','otp3','otp4','otp5','otp6'].map(id => document.getElementById(id).value).join('')
+  if (code.length < 6) { showToast('Enter all 6 digits', true); return }
+  document.getElementById('forgot-step2').classList.add('hidden')
+  document.getElementById('forgot-step3').classList.remove('hidden')
+  showToast('Code verified!')
+}
+
+function resetPassword() {
+  const pass    = document.getElementById('np-pass').value
+  const confirm = document.getElementById('np-confirm').value
+  if (!pass || pass.length < 8) { showToast('Password too short', true); return }
+  if (pass !== confirm) {
+    document.getElementById('np-confirm').classList.add('error')
+    document.getElementById('np-confirm-err').classList.add('show')
+    return
+  }
+  showSuccess('reset')
+}
+</script>
