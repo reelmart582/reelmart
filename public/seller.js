@@ -1,5 +1,5 @@
-const API = "http://localhost:3000/api/products";
-const MEDIA_BASE = "http://localhost:3000/uploads/";
+const API = "/api/products";
+const MEDIA_BASE = "/uploads/";
 
 const form = document.getElementById("productForm");
 const productsContainer = document.getElementById("productsContainer");

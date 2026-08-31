@@ -21,7 +21,7 @@ router.post("/initialize", authMiddleware, async (req, res) => {
             email:     user.email,
             amount:    amount,
             reference: `RM-${Date.now()}-${orderId}`,
-            callback_url: `http://localhost:3000/payment-success.html`,
+            callback_url: `${process.env.APP_URL}/payment-success.html`,
             metadata: {
                 orderId:    orderId,
                 customerName: order.fullName

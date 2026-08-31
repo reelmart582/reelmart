@@ -370,7 +370,7 @@ function renderSummary() {
 
   container.innerHTML = cart.map(item => {
     const imgSrc = item.image
-      ? (item.image.startsWith('http') ? item.image : 'http://localhost:3000/uploads/' + item.image)
+      ? (item.image.startsWith('http') ? item.image : '/uploads/' + item.image)
       : null;
     const lineTotal = Number(item.price) * Number(item.quantity || 1);
     return `
@@ -511,7 +511,7 @@ async function payWithPaystack() {
 
   try {
     // Create the order first
-    const orderRes = await fetch('http://localhost:3000/api/orders', {
+    const orderRes = await fetch('/api/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
       body: JSON.stringify({
@@ -524,7 +524,7 @@ async function payWithPaystack() {
     if (!orderRes.ok) { showToast(orderData.message || 'Order failed', true); btn.disabled = false; btn.innerHTML = 'Pay with Paystack'; return; }
 
     // Then initialize Paystack
-    const payRes = await fetch('http://localhost:3000/api/payments/initialize', {
+    const payRes = await fetch('/api/payments/initialize', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
       body: JSON.stringify({ orderId: orderData.order._id })
@@ -585,7 +585,7 @@ async function placeOrder() {
   btn.innerHTML = '⏳ Processing...';
 
   try {
-    const res  = await fetch('http://localhost:3000/api/orders', {
+    const res  = await fetch('/api/orders', {
       method:  'POST',
       headers: {
         'Content-Type':  'application/json',

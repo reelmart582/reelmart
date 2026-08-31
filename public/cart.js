@@ -54,7 +54,7 @@ function renderCart() {
             ? (
                 item.image.startsWith("http")
                     ? item.image
-                    : `http://localhost:3000/uploads/${item.image}`
+                    : `/uploads/${item.image}`
               )
             : "https://via.placeholder.com/200x200?text=Product";
 

@@ -1,8 +1,8 @@
 require("dotenv").config();
 
 const express = require("express");
-const cors    = require("cors");
-const path    = require("path");
+const cors = require("cors");
+const path = require("path");
 
 const connectDB      = require("./config/database");
 const authRoutes     = require("./routes/authRoutes");
@@ -27,9 +27,9 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(express.static(path.join(__dirname, "../public")));
 
 // ── API Routes ────────────────────────────────────────────────
-app.use("/api/auth",     authRoutes);
+app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
-app.use("/api/orders",   orderRoutes);
+app.use("/api/orders", orderRoutes);
 app.use("/api/payments", paymentRoutes);
 
 // ── Homepage ──────────────────────────────────────────────────
@@ -58,9 +58,9 @@ app.get("/search", (req, res) => {
     res.sendFile(path.join(__dirname, "../public/search.html"));
 });
 
-
 // ── Start server ──────────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`🚀 ReelMart running at http://localhost:${PORT}`);
+
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(`🚀 ReelMart running on port ${PORT}`);
 });

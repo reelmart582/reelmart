@@ -711,7 +711,7 @@ async function doLogin() {
   document.head.appendChild(style)
 
   try {
-    const res  = await fetch('http://localhost:3000/api/auth/login', {
+    const res  = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password: pass })
@@ -783,7 +783,7 @@ async function doRegister() {
   btn.innerHTML = '<i class="ti ti-loader-2" style="animation:spin 1s linear infinite;font-size:16px" aria-hidden="true"></i> Creating account...'
 
   try {
-    const res  = await fetch('http://localhost:3000/api/auth/register', {
+    const res  = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ fullName: fname + ' ' + lname, email, password: pass, role: 'seller' })
