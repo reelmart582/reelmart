@@ -5,9 +5,9 @@ const {
     registerUser,
     loginUser,
     getProfile
-} = require("../controllers/authController");
+} = require("../controllers/authcontroller");
 
-const authMiddleware = require("../middleware/authMiddleware");
+const authMiddleware = require("../middleware/authmiddleware");
 
 // ===============================
 // PUBLIC ROUTES

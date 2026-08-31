@@ -1,5 +1,5 @@
 const Order = require("../models/order");
-const Product = require("../models/product");
+const Product = require("../models/order");
 
 const ALLOWED_STATUS = ["pending", "confirmed", "shipped", "delivered", "cancelled"];
 const STATUS_ORDER = { pending: 0, confirmed: 1, shipped: 2, delivered: 3 };
