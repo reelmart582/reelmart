@@ -1,6 +1,6 @@
 const express=require("express");
 const router=express.Router();
-const authMiddleware=require("../middleware/authMiddleware");
+const authMiddleware=require("../middleware/authmiddleware");
 const {placeOrder,getMyOrders,getOrder,getSellerOrders,updateOrderStatus}=require("../controllers/ordercontroller");
 router.post("/",authMiddleware,placeOrder);
 router.get("/my-orders",authMiddleware,getMyOrders);

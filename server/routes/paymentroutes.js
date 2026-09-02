@@ -3,7 +3,7 @@ const router  = express.Router();
 const https   = require("https");
 const Order   = require("../models/order");
 const Product = require("../models/product");
-const authMiddleware = require("../middleware/authMiddleware");
+const authMiddleware = require("../middleware/authmiddleware");
 
 // ── Initialize Paystack payment ───────────────────────────────
 router.post("/initialize", authMiddleware, async (req, res) => {
