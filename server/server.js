@@ -8,7 +8,7 @@ const connectDB      = require("./config/database");
 const authRoutes     = require("./routes/authroutes");
 const productRoutes  = require("./routes/productRoutes");
 const orderRoutes    = require("./routes/orderRoutes");
-const paymentRoutes  = require("./routes/paymentRoutes");
+const paymentRoutes  = require("./routes/paymentroutes");
 
 const app = express();
 
