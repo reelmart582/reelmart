@@ -1,7 +1,10 @@
-const API_BASE =
-    window.location.hostname === "localhost" ||
-    window.location.hostname === "127.0.0.1"
-        ? "http://localhost:3000"
-        : "";
+const BASE_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:3000'
+  : 'https://reelmart.onrender.com';
 
-const MEDIA_BASE = API_BASE + "/uploads/";
+const API_BASE    = BASE_URL + '/api';
+const UPLOADS_URL = BASE_URL + '/uploads/';
+
+window.BASE_URL    = BASE_URL;
+window.API_BASE    = API_BASE;
+window.UPLOADS_URL = UPLOADS_URL;
