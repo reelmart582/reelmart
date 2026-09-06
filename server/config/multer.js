@@ -1,25 +1,22 @@
-const multer = require("multer");
-const path   = require("path");
+const multer     = require("multer");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, "server/uploads/");
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key:    process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const fileFilter = (req, file, cb) => {
-    const imageTypes = /jpg|jpeg|png|webp/;
-    const videoTypes = /mp4|mov|webm|avi/;
-    const ext = path.extname(file.originalname).toLowerCase().replace('.','');
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: "reelmart",
+        allowed_formats: ["jpg", "jpeg", "png", "webp", "mp4", "mov", "webm"],
+        resource_type: "auto",
+    },
+});
 
-    if (imageTypes.test(ext) || videoTypes.test(ext)) {
-        cb(null, true);
-    } else {
-        cb(new Error("Only images (jpg,png,webp) and videos (mp4,mov,webm) are allowed"));
-    }
-};
+const upload = multer({ storage: storage });
 
-module.exports = multer({ storage, fileFilter });
+module.exports = upload;
