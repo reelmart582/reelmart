@@ -46,8 +46,12 @@ const createProduct = async (req,res)=>{
             attributes: parsedAttributes,
             variants: parsedVariants,
 
-            image: req.files && req.files["image"] ? req.files["image"][0].filename : "",
-            reelVideo: req.files && req.files["reelVideo"] ? req.files["reelVideo"][0].filename : ""
+           image: req.files && req.files["image"]
+    ? req.files["image"][0].path
+    : "",
+            rreelVideo: req.files && req.files["reelVideo"]
+    ? req.files["reelVideo"][0].path
+    : ""
 
         });
 
