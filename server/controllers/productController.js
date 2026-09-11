@@ -1,9 +1,17 @@
 const Product = require("../models/product");
 
-// Create Product
-const createProduct = async (req,res)=>{
+// ======================================================
+// CREATE PRODUCT
+// ======================================================
 
-    try{
+const createProduct = async (req, res) => {
+
+    try {
+
+        // Debug uploaded files
+        console.log("========== FILE UPLOAD DEBUG ==========");
+        console.log("REQ FILES:", req.files);
+        console.log("=======================================");
 
         const {
             name,
@@ -16,24 +24,84 @@ const createProduct = async (req,res)=>{
             variants
         } = req.body;
 
+
+        // Check authentication
         if (!req.user || !req.user.id) {
-            return res.status(401).json({ success: false, message: "Please sign in to create products." });
+
+            return res.status(401).json({
+                success: false,
+                message: "Please sign in to create products."
+            });
+
         }
 
+
+        // ======================================================
+        // PARSE ATTRIBUTES
+        // ======================================================
+
         let parsedAttributes = {};
+
+        try {
+
+            parsedAttributes = attributes
+                ? JSON.parse(attributes)
+                : {};
+
+        } catch {
+
+            parsedAttributes = {};
+
+        }
+
+
+        // ======================================================
+        // PARSE VARIANTS
+        // ======================================================
+
         let parsedVariants = [];
 
         try {
-            parsedAttributes = attributes ? JSON.parse(attributes) : {};
+
+            parsedVariants = variants
+                ? JSON.parse(variants)
+                : [];
+
         } catch {
-            parsedAttributes = {};
+
+            parsedVariants = [];
+
         }
 
-        try {
-            parsedVariants = variants ? JSON.parse(variants) : [];
-        } catch {
-            parsedVariants = [];
-        }
+
+        // ======================================================
+        // GET CLOUDINARY FILE URLS
+        // ======================================================
+
+        const imageUrl =
+            req.files &&
+            req.files["image"] &&
+            req.files["image"][0]
+                ? req.files["image"][0].path
+                : "";
+
+
+        const reelVideoUrl =
+            req.files &&
+            req.files["reelVideo"] &&
+            req.files["reelVideo"][0]
+                ? req.files["reelVideo"][0].path
+                : "";
+
+
+        // More useful upload debugging
+        console.log("IMAGE URL:", imageUrl);
+        console.log("REEL VIDEO URL:", reelVideoUrl);
+
+
+        // ======================================================
+        // CREATE PRODUCT
+        // ======================================================
 
         const product = await Product.create({
 
@@ -42,23 +110,32 @@ const createProduct = async (req,res)=>{
             price,
             category,
             stock,
+
+            // Always use the authenticated user's ID
             seller: req.user.id,
+
             attributes: parsedAttributes,
+
             variants: parsedVariants,
 
-           image: req.files && req.files["image"]
-    ? req.files["image"][0].path
-    : "",
-            rreelVideo: req.files && req.files["reelVideo"]
-    ? req.files["reelVideo"][0].path
-    : ""
+            // Cloudinary image URL
+            image: imageUrl,
+
+            // Cloudinary video URL
+            reelVideo: reelVideoUrl
 
         });
 
+
+        // ======================================================
+        // SUCCESS RESPONSE
+        // ======================================================
+
         res.status(201).json({
 
-            success:true,
-            message:"Product created successfully",
+            success: true,
+
+            message: "Product created successfully",
 
             product
 
@@ -66,14 +143,15 @@ const createProduct = async (req,res)=>{
 
     }
 
-    catch(error){
+    catch (error) {
 
-        console.log(error);
+        console.log("CREATE PRODUCT ERROR:", error);
 
         res.status(500).json({
 
-            success:false,
-            message:error.message
+            success: false,
+
+            message: error.message
 
         });
 
@@ -81,23 +159,28 @@ const createProduct = async (req,res)=>{
 
 };
 
-// Get All Products
 
-const getProducts = async(req,res)=>{
+// ======================================================
+// GET ALL PRODUCTS
+// ======================================================
 
-    try{
+const getProducts = async (req, res) => {
 
-        const products = await Product.find().populate("seller","fullName email");
+    try {
+
+        const products = await Product
+            .find()
+            .populate("seller", "fullName email");
 
         res.json(products);
 
     }
 
-    catch(error){
+    catch (error) {
 
         res.status(500).json({
 
-            message:error.message
+            message: error.message
 
         });
 
@@ -105,33 +188,40 @@ const getProducts = async(req,res)=>{
 
 };
 
-// Get Single Product
 
-const getProduct = async(req,res)=>{
+// ======================================================
+// GET SINGLE PRODUCT
+// ======================================================
 
-    try{
+const getProduct = async (req, res) => {
 
-        const product = await Product.findById(req.params.id).populate("seller","fullName username email");
+    try {
 
-        if(!product){
+        const product = await Product
+            .findById(req.params.id)
+            .populate("seller", "fullName username email");
+
+
+        if (!product) {
 
             return res.status(404).json({
 
-                message:"Product not found"
+                message: "Product not found"
 
             });
 
         }
 
+
         res.json(product);
 
     }
 
-    catch(error){
+    catch (error) {
 
         res.status(500).json({
 
-            message:error.message
+            message: error.message
 
         });
 
@@ -139,29 +229,32 @@ const getProduct = async(req,res)=>{
 
 };
 
-// Delete Product
 
-const deleteProduct = async(req,res)=>{
+// ======================================================
+// DELETE PRODUCT
+// ======================================================
 
-    try{
+const deleteProduct = async (req, res) => {
+
+    try {
 
         await Product.findByIdAndDelete(req.params.id);
 
         res.json({
 
-            success:true,
+            success: true,
 
-            message:"Product deleted"
+            message: "Product deleted"
 
         });
 
     }
 
-    catch(error){
+    catch (error) {
 
         res.status(500).json({
 
-            message:error.message
+            message: error.message
 
         });
 
@@ -169,11 +262,16 @@ const deleteProduct = async(req,res)=>{
 
 };
 
-module.exports={
 
-createProduct,
-getProducts,
-getProduct,
-deleteProduct
+// ======================================================
+// EXPORT CONTROLLERS
+// ======================================================
+
+module.exports = {
+
+    createProduct,
+    getProducts,
+    getProduct,
+    deleteProduct
 
 };
